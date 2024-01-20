@@ -1,8 +1,9 @@
 const fs = require('fs');
 const readline = require('node:readline');
+const path = require('path');
 
 const nameFile = '02-write-file.txt';
-const streamToWrite = fs.createWriteStream(nameFile);
+const streamToWrite = fs.createWriteStream(path.join(__dirname, nameFile));
 
 let rl = readline.createInterface({
   input: process.stdin,
