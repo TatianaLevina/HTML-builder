@@ -8,9 +8,7 @@ fs.mkdir(absolutePath, { recursive: true }, (err) => {
   if (err) {
     return console.error(err);
   }
-  console.log('Directory created successfully!');
 });
-
 fs.readdir(path.join(__dirname, 'files'), (err, files) => {
   if (err) throw err;
   files.forEach((file) => {
@@ -21,7 +19,6 @@ fs.readdir(path.join(__dirname, 'files'), (err, files) => {
         if (err) {
           return console.error(err);
         }
-        console.log('File was copied!');
       },
     );
   });
