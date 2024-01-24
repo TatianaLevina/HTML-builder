@@ -33,24 +33,17 @@ let templateFileContent = readFileContent(
 );
 templateFileContent.then(
   async (templateLines) => {
+    const tagRegexp = /{{(\w+)}}/g;
     for (let line of templateLines) {
-      if (line.match('{{header}}')) {
-        let headerLines = await readFileContent(
-          path.join(__dirname, 'components', 'header.html'),
-        );
-        line = line.replace('{{header}}', headerLines.join('\n'));
-      }
-      if (line.match('{{articles}}')) {
-        let articlesLines = await readFileContent(
-          path.join(__dirname, 'components', 'articles.html'),
-        );
-        line = line.replace('{{articles}}', articlesLines.join('\n'));
-      }
-      if (line.match('{{footer}}')) {
-        let footerLines = await readFileContent(
-          path.join(__dirname, 'components', 'footer.html'),
-        );
-        line = line.replace('{{footer}}', footerLines.join('\n'));
+      const matchedTags = line.matchAll(tagRegexp);
+      if (matchedTags) {
+        for (let tag of matchedTags) {
+          const tagName = tag[1];
+          let tagFileLines = await readFileContent(
+            path.join(__dirname, 'components', `${tagName}.html`),
+          );
+          line = line.replace(`${tag[0]}`, tagFileLines.join('\n'));
+        }
       }
       streamToWrite.write(`${line}\n`);
     }
@@ -106,7 +99,13 @@ function copyTree(srcPath, dstPath) {
     });
 }
 
-copyTree(
+function syncDirs(srcPath, dstPath) {
+  fsp.rm(dstPath, { force: true, recursive: true }).then(async () => {
+    copyTree(srcPath, dstPath);
+  });
+}
+
+syncDirs(
   path.join(__dirname, 'assets'),
   path.join(__dirname, 'project-dist', 'assets'),
 );
